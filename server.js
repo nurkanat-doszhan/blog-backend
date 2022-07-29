@@ -1,6 +1,7 @@
 const {MongoClient} = require("mongodb")
 const express = require('express')
 const id = require('uuid')
+const axios = require('axios')
 const URL = 'mongodb://localhost:27017/'
 const mongoClient = new MongoClient(URL)
 const cors = require('cors')
@@ -13,7 +14,7 @@ const users = db.collection('users')
 
 app.use(cors({
     origin: '*'
-}));
+}))
 
 app.get("/posts", async (req, res) => {
     try {
@@ -42,8 +43,17 @@ app.delete('/delete-post', (req, res) => {
     res.send("Delete req called")
 })
 
-app.get("/login", (req, res) => {
-    res.send(req.body)
+app.post("/login", urlencodedParser, async (req, res) => {
+    if(!req.body) return res.sendStatus(400)
+    try {
+        await mongoClient.connect()
+        users.find().toArray((err, results) => {
+            console.log(results)
+            // console.log(req)
+        })
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 app.get("/get-user", async (req, res) => {
